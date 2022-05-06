@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #  Build Specified Flavor of GER
 #
@@ -8,9 +8,11 @@ echo "Creating Build $commits"
 _tags=`git tag --points-at HEAD`
 echo "${_tags[0]}"
 IFS="\n" read -a tags <<< "$_tags"
+ARRAY=()
 for i in "${tags[@]}"
 do
     echo $i
+    ARRAY+=($i)
 done
-echo "tags=$tags"
+echo "tags=$ARRAY"
 exit
