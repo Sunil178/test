@@ -9,38 +9,33 @@ newlineToArray() {
 	IFS=$SAVEIFS
 }
 
-# TAGS="Another-tag Change Tag1 Tag2 Tag3 Test4 build-1 build-2 build-133 build-44"
-# newlineToArray "$TAGS" ARRAY
-# echo "${ARRAY[9]}"
-# exit
-
 get_git_build_number () {
-	# CURRENT_TAG="Another-tag Change Tag1 Tag2 Tag3 Test4 build-1 build-2 build-133 build-44"
 	CURRENT_TAG=`git tag --points-at HEAD`
-	# CURRENT_TAG="custom tags"
 	BUILD='build'
 	if [[ "$CURRENT_TAG" == *"$BUILD"* ]]; then
-		BUILD_REPS="${CURRENT_TAG//[^build]}"
-		BUILD_COUNT=${#BUILD_REPS}
-		if [ $BUILD_COUNT -gt 5 ]; then
+		newlineToArray "$CURRENT_TAG" ARRAY
+		CURRENT_TAG_ARRAY=()
+		for (( i=0; i<${#ARRAY[@]}; i++ ))
+		do
+			if [[ "${ARRAY[$i]}" == *"$BUILD"* ]]; then
+				CURRENT_TAG_ARRAY+=(${ARRAY[$i]})
+			fi
+		done
+		if [ ${#CURRENT_TAG_ARRAY[@]} -gt 1 ]; then
 			echo "error: More than one build tags are found"
 			exit
 		fi
-		VALUE=${CURRENT_TAG#*-}
+		VALUE=${CURRENT_TAG_ARRAY[0]#*-}
 		local -n VAR=$1
 		VAR=$VALUE
 	else
-		# TAGS="Another-tag Change Tag1 Tag2 Tag3 Test4 build-1 build-2 build-133 build-44"
 		TAGS=`git tag`
-		SAVEIFS=$IFS
-		IFS=$'\n'
-		TAGS=($TAGS)
-		IFS=$SAVEIFS
+		newlineToArray "$TAGS" ARRAY
 		MAX=0
-		for (( i=0; i<${#TAGS[@]}; i++ ))
+		for (( i=0; i<${#ARRAY[@]}; i++ ))
 		do
-			if [[ "${TAGS[$i]}" == *"$BUILD"* ]]; then
-				VALUE=${TAGS[$i]#*-}
+			if [[ "${ARRAY[$i]}" == *"$BUILD"* ]]; then
+				VALUE=${ARRAY[$i]#*-}
 				(($VALUE > MAX)) && MAX=$VALUE
 			fi
 		done
@@ -49,6 +44,5 @@ get_git_build_number () {
 	fi
 }
 
-get_git_build_number TAG
-echo "$TAG"
-
+get_git_build_number TAG_NUMBER
+echo "$TAG_NUMBER"
