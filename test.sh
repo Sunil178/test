@@ -5,14 +5,6 @@
 set -x
 commits=$(git rev-list HEAD --count origin/main)
 echo "Creating Build $commits"
-_tags=`git tag --points-at HEAD`
+_tags=`git tag`
+_tags=($_tags)
 echo "${_tags[0]}"
-IFS="\n" read -a tags <<< "$_tags"
-ARRAY=()
-for i in "${tags[@]}"
-do
-    echo $i
-    ARRAY+=($i)
-done
-echo "tags=$ARRAY"
-exit
