@@ -1,6 +1,2 @@
-print("1")
-print("1")
-print("1")
-print("1")
-print("1")
-print("1")
+fs.file-max=1000000
+fs.file-max=1000000
